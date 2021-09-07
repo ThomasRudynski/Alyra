@@ -8,9 +8,10 @@ contract Voting is Ownable{
 
     //uints
     uint winningProposalId;
-    uint proposalId = 1;
-    uint voteNumber;
-
+    uint proposalId;
+    uint voterNumber;
+    uint proposalNumber;
+    
 
     //Structs
     struct Voter {
@@ -46,9 +47,8 @@ contract Voting is Ownable{
     event WorkflowStatusChange(WorkflowStatus previousStatus, WorkflowStatus newStatus);
 
     //Mappings
-    mapping(address => bool) whitelist;
+    mapping(address => Voter) whitelist;
     mapping(uint => Proposal) proposals;
-    mapping(address => uint) votes;
 
     //Modifiers
      modifier ownerWhitelist(){
@@ -98,8 +98,8 @@ contract Voting is Ownable{
     }
 
     function whitelist(address _address) public ownerWhitelist {
-        require(whitelist[_address], "Address already whitelisted");
-        whitelist[_address] = true;
+        require(false = whitelist[_address].isRegistered, "Address already whitelisted");
+        whitelist[_address] = Voter(true,false,-1);
     }
 
 
@@ -109,7 +109,7 @@ contract Voting is Ownable{
     }
 
     function addProposal(string description) external {
-        require(true == whitelist(msg.sender), "You're not whitelisted");
+        require(true == whitelist(msg.sender).isRegistered, "You're not whitelisted");
         Proposal memory proposal = Proposal(description,0);
         proposals[proposalId] = proposal;
         emit ProposalRegistered(proposalId);
@@ -129,12 +129,13 @@ contract Voting is Ownable{
     }
 
     function vote(uint proposalIndex) external{
-        require(true == whitelist(msg.sender),"You're not whitelisted");
-        require(votes[msg.sender != 0],"You have already voted");
+        require(true == whitelist(msg.sender).isRegistered,"You're not whitelisted");
+        require(false == whitelist(msg.sender).hasVoted,"You have already voted");
         require(proposals[uint] != 0,"This proposal does not exist");
-        votes[msg.sender] = proposalIndex;
+        whitelist(msg.sender).votedProposalId = proposalIndex;
+        proposals[proposalIndex].voteCount++;
         emit Voted(msg.sender, proposalIndex);
-        voteNumber++;
+        voterNumber++;
     }
 
     function endVotingSession() public ownerEndVotingSession {
@@ -145,11 +146,19 @@ contract Voting is Ownable{
 
 
     function votesCalculation() public ownerCalculateVotes {
-        for (uint i=0; i < voteNumber; i++){
-            proposals[votes[i]].voteCount++;
+        for (uint i=0; i < proposalId; i++){
+            if(winnerCount <= proposals[proposalId].voteCount){
+                winnerCount = proposals[proposalId].voteCount;
+                winningProposalId = proposalId;
+            }
         }
         emit VotesTallied();
         emit WorkflowStatusChange(VotingSessionEnded, VotesTallied);
+    }
+
+
+    function getWinnerInfo() public view returns (string details){
+        return proposals[winningProposalId].description;
     }
 
 }
