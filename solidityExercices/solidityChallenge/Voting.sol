@@ -7,10 +7,8 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 contract Voting is Ownable{
 
     //uints
-    uint winningProposalId;
-    uint proposalId;
-    uint voterNumber;
-    uint proposalNumber;
+    uint private winningProposalId;
+    uint private proposalId;
     
 
     //Structs
@@ -127,7 +125,6 @@ contract Voting is Ownable{
         whitelist[msg.sender].hasVoted = true;
         proposals[proposalIndex].voteCount++;
         emit Voted(msg.sender, proposalIndex);
-        voterNumber++;
     }
 
     function endVotingSession() public ownerEndVotingSession {
