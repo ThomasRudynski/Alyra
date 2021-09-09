@@ -10,6 +10,8 @@ contract Voting is Ownable{
     uint private winningProposalId;
     uint private proposalId;
     
+    //status
+    WorkflowStatus status;
 
     //Structs
     //Votant
@@ -90,15 +92,18 @@ contract Voting is Ownable{
         voter.isRegistered = true;
         voter.hasVoted = false;
         whitelist[_address] = voter;
+        status = WorkflowStatus.RegisteringVoters;
     }
 
 
     function startProposalRegistration() public ownerStartProposalRegistration {
+        status = WorkflowStatus.ProposalsRegistrationStarted;
         emit ProposalsRegistrationStarted();
         emit WorkflowStatusChange(WorkflowStatus.RegisteringVoters, WorkflowStatus.ProposalsRegistrationStarted);
     }
 
     function addProposal(string memory description) external {
+        require(status == WorkflowStatus.ProposalsRegistrationStarted, "Proposal registration is not started");
         require(whitelist[msg.sender].isRegistered == true, "You're not whitelisted");
         Proposal memory proposal = Proposal(description,0);
         proposals[proposalId] = proposal;
@@ -107,6 +112,7 @@ contract Voting is Ownable{
     }
 
     function endProposalRegistration() public ownerEndProposalRegistration {
+        status = WorkflowStatus.ProposalsRegistrationStarted;
         emit ProposalsRegistrationEnded();
         emit WorkflowStatusChange(WorkflowStatus.ProposalsRegistrationStarted, WorkflowStatus.ProposalsRegistrationEnded);
     }
@@ -114,11 +120,13 @@ contract Voting is Ownable{
 
 
     function startVotingSession() public ownerStartVotingSession {
+        status = WorkflowStatus.VotingSessionStarted;
         emit VotingSessionStarted();
         emit WorkflowStatusChange(WorkflowStatus.ProposalsRegistrationEnded, WorkflowStatus.VotingSessionStarted);
     }
 
     function vote(uint proposalIndex) external{
+        require(status == WorkflowStatus.VotingSessionStarted, "Voting session is not started");
         require(true == whitelist[msg.sender].isRegistered,"You're not whitelisted");
         require(false == whitelist[msg.sender].hasVoted,"You have already voted");
         whitelist[msg.sender].votedProposalId = proposalIndex;
@@ -128,6 +136,7 @@ contract Voting is Ownable{
     }
 
     function endVotingSession() public ownerEndVotingSession {
+        status = WorkflowStatus.VotingSessionStarted;
         emit VotingSessionEnded();
         emit WorkflowStatusChange(WorkflowStatus.VotingSessionStarted, WorkflowStatus.VotingSessionEnded);
     }
@@ -142,6 +151,7 @@ contract Voting is Ownable{
                 winningProposalId = i;
             }
         }
+        status = WorkflowStatus.VotesTallied;
         emit VotesTallied();
         emit WorkflowStatusChange(WorkflowStatus.VotingSessionEnded, WorkflowStatus.VotesTallied);
     }
