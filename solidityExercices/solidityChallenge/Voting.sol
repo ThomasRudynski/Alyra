@@ -124,6 +124,7 @@ contract Voting is Ownable{
         require(true == whitelist[msg.sender].isRegistered,"You're not whitelisted");
         require(false == whitelist[msg.sender].hasVoted,"You have already voted");
         whitelist[msg.sender].votedProposalId = proposalIndex;
+        whitelist[msg.sender].hasVoted = true;
         proposals[proposalIndex].voteCount++;
         emit Voted(msg.sender, proposalIndex);
         voterNumber++;
@@ -139,9 +140,9 @@ contract Voting is Ownable{
     function votesCalculation() public ownerCalculateVotes {
         uint winnerCount;
         for (uint i=0; i < proposalId; i++){
-            if(winnerCount <= proposals[proposalId].voteCount){
-                winnerCount = proposals[proposalId].voteCount;
-                winningProposalId = proposalId;
+            if(winnerCount <= proposals[i].voteCount){
+                winnerCount = proposals[i].voteCount;
+                winningProposalId = i;
             }
         }
         emit VotesTallied();
@@ -149,7 +150,7 @@ contract Voting is Ownable{
     }
 
 
-    function getWinnerInfo() public view returns (string memory details){
+    function getWinnerInfo() public view returns (string memory description){
         return proposals[winningProposalId].description;
     }
 
