@@ -1,0 +1,19 @@
+Commentaires sur le code : 
+
+- Ajouter la licence appropriée au contracts = "SPDX-licence-Identifier : ..."
+- pragma solitidy ^0.5.12 => Choisir un pragma fixe
+- Importer SafeMath
+- escrow => payable
+- function Crowdsale(...) => Utiliser constructor()
+- tx.origin => Utiliser msg.sender
+- function() public => function() fallback external payable
+- .send => Utiliser .transfer pour revert en cas d'exception
+- address payee => address payable payee
+- /!\ Réentrance => payee.send(payment) => Remettre la balance à 0 avant de rembourser
+- .send => Utiliser .transfer pour revert en cas d'exception
+- Vérifier certaines conditions pour pouvoir executer withdrawPayments =>  
+        require(payment != 0);
+        require(address(this).balance >= payment);
+- Mettre en place un système PullPayment
+- Ajouter une période avant le remboursement
+- Mettre en place des events ?
