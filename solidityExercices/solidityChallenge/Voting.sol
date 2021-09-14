@@ -11,7 +11,7 @@ contract Voting is Ownable{
     uint private proposalId;
     
     //status
-    WorkflowStatus status;
+    WorkflowStatus public status;
 
     //Structs
     //Votant
@@ -50,8 +50,8 @@ contract Voting is Ownable{
     event WorkflowStatusChange(WorkflowStatus previousStatus, WorkflowStatus newStatus);
 
     //Mappings
-    mapping(address => Voter) whitelist;
-    mapping(uint => Proposal) proposals;
+    mapping(address => Voter) private whitelist;
+    mapping(uint => Proposal) private proposals;
 
     //Modifiers
      modifier ownerWhitelist(){
