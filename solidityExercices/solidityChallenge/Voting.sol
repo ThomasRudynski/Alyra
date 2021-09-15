@@ -6,13 +6,6 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 //Smart Contract Voting
 contract Voting is Ownable{
 
-    //uints
-    uint private winningProposalId;
-    uint private proposalId;
-    
-    //status
-    WorkflowStatus public status;
-
     //Structs
     //Votant
     struct Voter {  
@@ -37,6 +30,13 @@ contract Voting is Ownable{
         VotingSessionEnded,
         VotesTallied
     }
+
+    //uints
+    uint private winningProposalId;
+    uint private proposalId;
+    
+    //status
+    WorkflowStatus public status;
     
     //Events
     event VoterRegistered(address voterAddress);
@@ -53,50 +53,17 @@ contract Voting is Ownable{
     mapping(address => Voter) private whitelist;
     mapping(uint => Proposal) private proposals;
 
-    //Modifiers
-     modifier ownerWhitelist(){
-        require(msg.sender == owner(), "Only contract owner can whitelist");   
-        _;
-     }
-
-    modifier ownerStartProposalRegistration(){
-        require(msg.sender == owner(), "Only contract owner can start proposal registration");
-        _;
-    }
-
-    modifier ownerEndProposalRegistration(){
-        require(msg.sender == owner(), "Only contract owner can end proposal registration");
-        _;
-    }
-
-    modifier ownerStartVotingSession(){
-        require(msg.sender == owner(), "Only contract owner can start voting session");
-        _;
-    }
-
-    modifier ownerEndVotingSession(){
-        require(msg.sender == owner(), "Only contract owner can end voting session");
-        _;
-    }
-
-    modifier ownerCalculateVotes(){
-        require(msg.sender == owner(), "Only contract owner can calculate votes");
-        _;
-    }
-
-
     //Functions
-    function whitelistVoter(address _address) public ownerWhitelist {
+    function whitelistVoter(address _address) public onlyOwner {
+        require(status == WorkflowStatus.RegisteringVoters, "Whitelist voters is not started");
         require(whitelist[_address].isRegistered == false, "Address already whitelisted");
-        Voter memory voter;
-        voter.isRegistered = true;
-        voter.hasVoted = false;
-        whitelist[_address] = voter;
-        status = WorkflowStatus.RegisteringVoters;
+        whitelist[_address] = Voter(true,false,0);
     }
 
 
-    function startProposalRegistration() public ownerStartProposalRegistration {
+    function startProposalRegistration() public onlyOwner {
+        require(status != WorkflowStatus.ProposalsRegistrationEnded, "Proposal registration is ended");
+        require(status == WorkflowStatus.RegisteringVoters, "Registering voters is not ended");
         status = WorkflowStatus.ProposalsRegistrationStarted;
         emit ProposalsRegistrationStarted();
         emit WorkflowStatusChange(WorkflowStatus.RegisteringVoters, WorkflowStatus.ProposalsRegistrationStarted);
@@ -105,21 +72,22 @@ contract Voting is Ownable{
     function addProposal(string memory description) external {
         require(status == WorkflowStatus.ProposalsRegistrationStarted, "Proposal registration is not started");
         require(whitelist[msg.sender].isRegistered == true, "You're not whitelisted");
-        Proposal memory proposal = Proposal(description,0);
-        proposals[proposalId] = proposal;
-        emit ProposalRegistered(proposalId);
+        proposals[proposalId] = Proposal(description,0);
         proposalId++;
+        emit ProposalRegistered(proposalId-1);
     }
 
-    function endProposalRegistration() public ownerEndProposalRegistration {
-        status = WorkflowStatus.ProposalsRegistrationStarted;
+    function endProposalRegistration() public onlyOwner {
+        require(status = WorkflowStatus.ProposalsRegistrationStarted, "Proposal registration is not started");
+        status = WorkflowStatus.ProposalsRegistrationEnded;
         emit ProposalsRegistrationEnded();
         emit WorkflowStatusChange(WorkflowStatus.ProposalsRegistrationStarted, WorkflowStatus.ProposalsRegistrationEnded);
     }
 
 
 
-    function startVotingSession() public ownerStartVotingSession {
+    function startVotingSession() public onlyOwner {
+        require(status == WorkflowStatus.ProposalsRegistrationEnded, "Proposal registration is not ended");
         status = WorkflowStatus.VotingSessionStarted;
         emit VotingSessionStarted();
         emit WorkflowStatusChange(WorkflowStatus.ProposalsRegistrationEnded, WorkflowStatus.VotingSessionStarted);
@@ -132,25 +100,22 @@ contract Voting is Ownable{
         whitelist[msg.sender].votedProposalId = proposalIndex;
         whitelist[msg.sender].hasVoted = true;
         proposals[proposalIndex].voteCount++;
+
+        if(proposals[proposalIndex].winningProposalId <= proposals[i].proposalIndex){
+            winningProposalId = i;
+        }
         emit Voted(msg.sender, proposalIndex);
     }
 
-    function endVotingSession() public ownerEndVotingSession {
-        status = WorkflowStatus.VotingSessionStarted;
+    function endVotingSession() public onlyOwner {
+        require(status == WorkflowStatus.VotingSessionStarted, "Voting session is not started");
+        status = WorkflowStatus.VotingSessionEnded;
         emit VotingSessionEnded();
         emit WorkflowStatusChange(WorkflowStatus.VotingSessionStarted, WorkflowStatus.VotingSessionEnded);
     }
 
-
-
-    function votesCalculation() public ownerCalculateVotes {
-        uint winnerCount;
-        for (uint i=0; i < proposalId; i++){
-            if(winnerCount <= proposals[i].voteCount){
-                winnerCount = proposals[i].voteCount;
-                winningProposalId = i;
-            }
-        }
+    function votesCalculation() public onlyOwner {
+        require(status == WorkflowStatus.VotingSessionEnded, "Voting session is not ended");
         status = WorkflowStatus.VotesTallied;
         emit VotesTallied();
         emit WorkflowStatusChange(WorkflowStatus.VotingSessionEnded, WorkflowStatus.VotesTallied);
