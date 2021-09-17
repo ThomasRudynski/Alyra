@@ -2,10 +2,10 @@ var Web3 = require('web3');
 web3 = new  Web3(new  Web3.providers.HttpProvider('https://mainnet.infura.io/v3/334fe0b193374db486f2de7564dc4343'));
     
 console.log('Contract tokens balance.....');
-var address = ('0xd804ab1667e940052614a5acd103dde4d298ce36');
+var address = ('0xd804ab1667e940052614a5acd103dde4d298ce36'); //Ethereum Address
 console.log("Address: "+address);
     
-var contractAddr = ('0xb683d83a532e2cb7dfa5275eed3698436371cc9f');
+var contractAddress = ('0xb683d83a532e2cb7dfa5275eed3698436371cc9f'); //Contract Address
 var tokenAddress = (address).substring(2); //Remove "0x"
     
 //Balance of function call
