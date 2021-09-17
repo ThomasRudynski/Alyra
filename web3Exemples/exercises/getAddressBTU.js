@@ -16,7 +16,7 @@ web3.eth.call({
 	data: contractData 
 }, function(err, result) {
 	if (result) {
-		var  tokens = web3.utils.toBN(result).toString(); 
+		var tokens = web3.utils.toBN(result).toString(); 
 		    console.log('Tokens : '+web3.utils.fromWei(tokens, 'ether')); //Balance
 	}
 	else {
