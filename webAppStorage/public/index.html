@@ -71,11 +71,13 @@
 
         async function getCurrentAccount() {
             const accounts = await window.web3.eth.getAccounts();
+            console.log(accounts[0]);
             return accounts[0];
         }
         
         async function load() {
             await loadWeb3();
+            ethereum.enable();
             window.contract = await loadContract();
             updateStatus('Ready!');
         }
