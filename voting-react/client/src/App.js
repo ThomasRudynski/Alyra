@@ -43,7 +43,6 @@ class App extends Component {
   };
 
   runInit = async () => {
-    console.log(this.state);
     window.ethereum.on('accountsChanged', function (accounts) {
       window.location.href = "http://localhost:3000";
     });
@@ -52,7 +51,6 @@ class App extends Component {
   whitelistVoter = async () => {
     const { accounts, contract } = this.state;
     const address = this.address.value;
-    console.log(this.address.value);
 
     // Interaction avec le smart contract pour ajouter un compte 
     try {
