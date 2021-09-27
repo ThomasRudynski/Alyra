@@ -56,7 +56,8 @@ class App extends Component {
     try {
       await contract.methods.whitelistVoter(address).send({ from: accounts[0] });
     } catch (e) {
-      alert(e.message);
+      var firstPart = e.message.substring(e.message.search("VM"))
+      alert(firstPart.substring(0,firstPart.search('"')));
     }
 
   }
@@ -67,7 +68,8 @@ class App extends Component {
     try {
       await contract.methods.startProposalRegistration().send({ from: accounts[0] });
     } catch (e) {
-      alert(e.message);
+      var firstPart = e.message.substring(e.message.search("VM"))
+      alert(firstPart.substring(0,firstPart.search('"')));
     }
   }
 
@@ -77,7 +79,8 @@ class App extends Component {
     try {
       await contract.methods.addProposal(document.getElementById("description").value).send({ from: accounts[0] });
     } catch (e) {
-      alert(e.message);
+      var firstPart = e.message.substring(e.message.search("VM"))
+      alert(firstPart.substring(0,firstPart.search('"')));
     }
   }
 
@@ -87,7 +90,8 @@ class App extends Component {
     try {
       await contract.methods.endProposalRegistration().send({ from: accounts[0] });
     } catch (e) {
-      alert(e.message);
+      var firstPart = e.message.substring(e.message.search("VM"))
+      alert(firstPart.substring(0,firstPart.search('"')));
     }
   }
 
@@ -97,7 +101,8 @@ class App extends Component {
     try {
       await contract.methods.startVotingSession().send({ from: accounts[0] });
     } catch (e) {
-      alert(e.message);
+      var firstPart = e.message.substring(e.message.search("VM"))
+      alert(firstPart.substring(0,firstPart.search('"')));
     }
   }
 
@@ -107,7 +112,8 @@ class App extends Component {
     try {
       await contract.methods.vote(document.getElementById("idProposal").value).send({ from: accounts[0] });
     } catch (e) {
-      alert(e.message);
+      var firstPart = e.message.substring(e.message.search("VM"))
+      alert(firstPart.substring(0,firstPart.search('"')));
     }
   }
 
@@ -117,7 +123,8 @@ class App extends Component {
     try {
       await contract.methods.endVotingSession().send({ from: accounts[0] });
     } catch (e) {
-      alert(e.message);
+      var firstPart = e.message.substring(e.message.search("VM"))
+      alert(firstPart.substring(0,firstPart.search('"')));
     }
   }
 
@@ -127,7 +134,8 @@ class App extends Component {
     try {
       await contract.methods.votesCalculation().send({ from: accounts[0] });
     } catch (e) {
-      alert(e.message);
+      var firstPart = e.message.substring(e.message.search("VM"))
+      alert(firstPart.substring(0,firstPart.search('"')));
     }
   }
 
@@ -138,7 +146,8 @@ class App extends Component {
     try {
       await contract.methods.getWinnerInfo().call({ from: accounts[0] });
     } catch (e) {
-      alert(e.message);
+      var firstPart = e.message.substring(e.message.search("VM"))
+      alert(firstPart.substring(0,firstPart.search('"')));
     }
   }
 
