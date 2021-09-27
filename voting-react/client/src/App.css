@@ -20,3 +20,16 @@
 .App-link {
   color: #09d3ac;
 }
+
+.row{
+  margin-top: 1%;
+  margin-bottom: 1%;
+}
+
+.title {
+  margin: 1%;
+}
+
+.input {
+  margin-bottom: 1% ; 
+}

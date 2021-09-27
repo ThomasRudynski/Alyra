@@ -23,7 +23,6 @@ class App extends Component {
       // Récupérer l’instance du smart contract “Whitelist” avec web3 et les informations du déploiement du fichier (client/src/contracts/Whitelist.json)
       const networkId = await web3.eth.net.getId();
       const deployedNetwork = Whitelist.networks[networkId];
-  
       const instance = new web3.eth.Contract(
         Whitelist.abi,
         deployedNetwork && deployedNetwork.address,

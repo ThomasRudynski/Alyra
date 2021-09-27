@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.7;
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
+import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 
 //Smart Contract Voting
 contract Voting is Ownable{
@@ -78,7 +78,7 @@ contract Voting is Ownable{
     }
 
     function endProposalRegistration() public onlyOwner {
-        require(status = WorkflowStatus.ProposalsRegistrationStarted, "Proposal registration is not started");
+        require(status == WorkflowStatus.ProposalsRegistrationStarted, "Proposal registration is not started");
         status = WorkflowStatus.ProposalsRegistrationEnded;
         emit ProposalsRegistrationEnded();
         emit WorkflowStatusChange(WorkflowStatus.ProposalsRegistrationStarted, WorkflowStatus.ProposalsRegistrationEnded);
@@ -101,8 +101,8 @@ contract Voting is Ownable{
         whitelist[msg.sender].hasVoted = true;
         proposals[proposalIndex].voteCount++;
 
-        if(proposals[proposalIndex].winningProposalId <= proposals[i].proposalIndex){
-            winningProposalId = i;
+        if(proposals[proposalIndex].voteCount >= proposals[winningProposalId].voteCount){
+            winningProposalId = proposalIndex;
         }
         emit Voted(msg.sender, proposalIndex);
     }
