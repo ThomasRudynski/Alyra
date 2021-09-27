@@ -144,7 +144,7 @@ class App extends Component {
     }
   }
 
-  
+
 
   render() {
     if (!this.state.web3) {
@@ -159,6 +159,15 @@ class App extends Component {
         </div>
 
         <Container>
+          <Row className="align-items-center">
+            <Col>
+              <h3>Administrateur</h3>
+            </Col>
+
+            <Col>
+              <h3>Utilisateur</h3>
+            </Col>
+          </Row>
           <Row className="align-items-center">
             <Col>
               <Card>
