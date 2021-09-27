@@ -79,8 +79,9 @@ contract Voting is Ownable{
     function addProposal(string memory description) external {
         require(status == WorkflowStatus.ProposalsRegistrationStarted, "Proposal registration is not started");
         require(whitelist[msg.sender].isRegistered == true, "You're not whitelisted");
+        require(proposalId<=2^256-1,"Max Proposal");
         proposals[proposalId] = Proposal(description,0);
-        proposalId++;
+        proposalId++; //Réentrence -- Question pour François
         emit ProposalRegistered(proposalId-1);
     }
 
