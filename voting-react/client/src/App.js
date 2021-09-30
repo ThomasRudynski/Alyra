@@ -11,7 +11,8 @@ import getWeb3 from "./getWeb3";
 import "./App.css";
 
 class App extends Component {
-  state = { storageValue: 0, web3: null, accounts: null, contract: null };
+
+  state = { storageValue: 0, web3: null, accounts: null, contract: null, owner: null };
 
   componentDidMount = async () => {
     try {
@@ -29,10 +30,11 @@ class App extends Component {
         Voting.abi,
         deployedNetwork && deployedNetwork.address,
       );
-
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
       this.setState({ web3, accounts, contract: instance }, this.runInit);
+      const contractOwner = await this.affectOwner();
+      this.setState({owner : contractOwner})
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -46,7 +48,8 @@ class App extends Component {
     window.ethereum.on('accountsChanged', function (accounts) {
       window.location.href = "http://localhost:3000";
     });
-  };
+  }
+
 
   whitelistVoter = async () => {
     const { accounts, contract } = this.state;
@@ -57,9 +60,8 @@ class App extends Component {
       await contract.methods.whitelistVoter(address).send({ from: accounts[0] });
     } catch (e) {
       var firstPart = e.message.substring(e.message.search("VM"))
-      alert(firstPart.substring(0,firstPart.search('"')));
+      alert(firstPart.substring(0, firstPart.search('"')));
     }
-
   }
 
   startProposalRegistration = async () => {
@@ -69,7 +71,7 @@ class App extends Component {
       await contract.methods.startProposalRegistration().send({ from: accounts[0] });
     } catch (e) {
       var firstPart = e.message.substring(e.message.search("VM"))
-      alert(firstPart.substring(0,firstPart.search('"')));
+      alert(firstPart.substring(0, firstPart.search('"')));
     }
   }
 
@@ -80,7 +82,7 @@ class App extends Component {
       await contract.methods.addProposal(document.getElementById("description").value).send({ from: accounts[0] });
     } catch (e) {
       var firstPart = e.message.substring(e.message.search("VM"))
-      alert(firstPart.substring(0,firstPart.search('"')));
+      alert(firstPart.substring(0, firstPart.search('"')));
     }
   }
 
@@ -91,7 +93,7 @@ class App extends Component {
       await contract.methods.endProposalRegistration().send({ from: accounts[0] });
     } catch (e) {
       var firstPart = e.message.substring(e.message.search("VM"))
-      alert(firstPart.substring(0,firstPart.search('"')));
+      alert(firstPart.substring(0, firstPart.search('"')));
     }
   }
 
@@ -102,7 +104,7 @@ class App extends Component {
       await contract.methods.startVotingSession().send({ from: accounts[0] });
     } catch (e) {
       var firstPart = e.message.substring(e.message.search("VM"))
-      alert(firstPart.substring(0,firstPart.search('"')));
+      alert(firstPart.substring(0, firstPart.search('"')));
     }
   }
 
@@ -113,7 +115,7 @@ class App extends Component {
       await contract.methods.vote(document.getElementById("idProposal").value).send({ from: accounts[0] });
     } catch (e) {
       var firstPart = e.message.substring(e.message.search("VM"))
-      alert(firstPart.substring(0,firstPart.search('"')));
+      alert(firstPart.substring(0, firstPart.search('"')));
     }
   }
 
@@ -124,7 +126,7 @@ class App extends Component {
       await contract.methods.endVotingSession().send({ from: accounts[0] });
     } catch (e) {
       var firstPart = e.message.substring(e.message.search("VM"))
-      alert(firstPart.substring(0,firstPart.search('"')));
+      alert(firstPart.substring(0, firstPart.search('"')));
     }
   }
 
@@ -135,7 +137,7 @@ class App extends Component {
       await contract.methods.votesCalculation().send({ from: accounts[0] });
     } catch (e) {
       var firstPart = e.message.substring(e.message.search("VM"))
-      alert(firstPart.substring(0,firstPart.search('"')));
+      alert(firstPart.substring(0, firstPart.search('"')));
     }
   }
 
@@ -147,148 +149,218 @@ class App extends Component {
       await contract.methods.getWinnerInfo().call({ from: accounts[0] });
     } catch (e) {
       var firstPart = e.message.substring(e.message.search("VM"))
-      alert(firstPart.substring(0,firstPart.search('"')));
+      alert(firstPart.substring(0, firstPart.search('"')));
     }
   }
 
+  getOwner = function () {
+    const { contract } = this.state;
+    return new Promise(function (resolve) {
+      resolve(contract.methods.owner().call());
+    })
+  }
 
+  affectOwner = async () => {
+    var result = await this.getOwner()
+    return result;
+  }
 
   render() {
     if (!this.state.web3) {
       return <div>Loading Web3, accounts, and contract...</div>;
     }
-    return (
-      <div className="App">
-        <div>
-          <h2 className="text-center title">Système de vote</h2>
-          <p className="text-center">Adresse de l'utilisateur : {this.state.accounts[0]}</p>
-          <hr></hr>
+
+    //OWNER VIEW
+    if (String(this.state.owner).toLowerCase() === String(this.state.accounts[0]).toLowerCase()){
+      return (
+        <div className="App">
+          <div>
+            <h2 className="text-center title">Système de vote</h2>
+            <p className="text-center" id="userAddress">Adresse de l'utilisateur : {this.state.accounts[0]}</p>
+            <hr></hr>
+          </div>
+          <Container>
+            <Row className="align-items-center">
+              <Col>
+                <h3>Administrateur</h3>
+              </Col>
+
+              <Col>
+                <h3>Utilisateur</h3>
+              </Col>
+            </Row>
+            <Row className="align-items-center">
+              <Col>
+                <Card>
+                  <Card.Header><strong>Ajouter un nouveau compte à la liste blanche</strong></Card.Header>
+                  <Card.Body>
+                    <Form.Group controlId="formAddress">
+                      <Form.Control type="text" id="address" ref={(input) => { this.address = input }} className="input" />
+                    </Form.Group>
+                    <Button onClick={this.whitelistVoter} variant="dark" className="button"> Autoriser </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+
+              <Col>
+                <Card>
+                  <Card.Header><strong>Ajouter une proposition</strong></Card.Header>
+                  <Card.Body>
+                    <Form.Group controlId="formDescription">
+                      <Form.Label>Description de la proposition : </Form.Label>
+                      <Form.Control type="text" id="description" className="input" />
+                    </Form.Group>
+                    <Button onClick={this.addProposal} variant="dark" className="button"> Ajouter </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+
+            <Row className="align-items-center">
+              <Col>
+                <Card>
+                  <Card.Header><strong>Démarrer l'enregistrement des propositions</strong></Card.Header>
+                  <Card.Body>
+                    <Button onClick={this.startProposalRegistration} variant="dark" className="button"> Démarrer </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+
+              <Col>
+                <Card>
+                  <Card.Header><strong>Vote</strong></Card.Header>
+                  <Card.Body>
+                    <Form.Group controlId="formId">
+                      <Form.Label>ID de la proposition : </Form.Label>
+                      <Form.Control type="text" id="idProposal" className="input" />
+                    </Form.Group>
+                    <Button onClick={this.vote} variant="dark" className="button"> Voter </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+
+            <Row className="align-items-center">
+              <Col>
+                <Card>
+                  <Card.Header><strong>Terminer l'enregistrement des propositions</strong></Card.Header>
+                  <Card.Body>
+                    <Button onClick={this.endProposalRegistration} variant="dark" className="button"> Terminer </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+
+              <Col>
+                <Card>
+                  <Card.Header><strong>Résultats</strong></Card.Header>
+                  <Card.Body>
+                    <Button onClick={this.getWinnerInfo} variant="dark" className="button"> Obtenir les résultats </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+
+            <Row className="align-items-center">
+              <Col>
+                <Card>
+                  <Card.Header><strong>Démarrer la session de vote</strong></Card.Header>
+                  <Card.Body>
+                    <Button onClick={this.startVotingSession} variant="dark" className="button"> Démarrer </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col>
+              </Col>
+            </Row>
+
+            <Row className="align-items-center">
+              <Col>
+                <Card>
+                  <Card.Header><strong>Terminer la session de vote</strong></Card.Header>
+                  <Card.Body>
+                    <Button onClick={this.endVotingSession} variant="dark" className="button"> Terminer </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col>
+              </Col>
+            </Row>
+
+            <Row className="align-items-center">
+              <Col>
+                <Card>
+                  <Card.Header><strong>Calculer les résultats</strong></Card.Header>
+                  <Card.Body>
+                    <Button onClick={this.votesCalculation} variant="dark" className="button"> Calculer </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col>
+              </Col>
+            </Row>
+          </Container>
+
+          <br></br>
         </div>
+      );
+    }
 
-        <Container>
-          <Row className="align-items-center">
-            <Col>
-              <h3>Administrateur</h3>
-            </Col>
+    //USER VIEW
+    if (String(this.state.owner).toLowerCase() !== String(this.state.accounts[0]).toLowerCase()){
+      return (
+        <div className="App">
+          <div>
+            <h2 className="text-center title">Système de vote</h2>
+            <p className="text-center" id="userAddress">Adresse de l'utilisateur : {this.state.accounts[0]}</p>
+            <hr></hr>
+          </div>
+          <Container>
+            <Row className="align-items-center">
+              <Col>
+                <Card>
+                  <Card.Header><strong>Ajouter une proposition</strong></Card.Header>
+                  <Card.Body>
+                    <Form.Group controlId="formDescription">
+                      <Form.Label>Description de la proposition : </Form.Label>
+                      <Form.Control type="text" id="description" className="input" />
+                    </Form.Group>
+                    <Button onClick={this.addProposal} variant="dark" className="button"> Ajouter </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
 
-            <Col>
-              <h3>Utilisateur</h3>
-            </Col>
-          </Row>
-          <Row className="align-items-center">
-            <Col>
-              <Card>
-                <Card.Header><strong>Ajouter un nouveau compte à la liste blanche</strong></Card.Header>
-                <Card.Body>
-                  <Form.Group controlId="formAddress">
-                    <Form.Control type="text" id="address" ref={(input) => { this.address = input }} className="input" />
-                  </Form.Group>
-                  <Button onClick={this.whitelistVoter} variant="dark" className="button"> Autoriser </Button>
-                </Card.Body>
-              </Card>
-            </Col>
+            <Row className="align-items-center">
+              <Col>
+                <Card>
+                  <Card.Header><strong>Vote</strong></Card.Header>
+                  <Card.Body>
+                    <Form.Group controlId="formId">
+                      <Form.Label>ID de la proposition : </Form.Label>
+                      <Form.Control type="text" id="idProposal" className="input" />
+                    </Form.Group>
+                    <Button onClick={this.vote} variant="dark" className="button"> Voter </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
 
-            <Col>
-              <Card>
-                <Card.Header><strong>Ajouter une proposition</strong></Card.Header>
-                <Card.Body>
-                  <Form.Group controlId="formDescription">
-                    <Form.Label>Description de la proposition : </Form.Label>
-                    <Form.Control type="text" id="description" className="input" />
-                  </Form.Group>
-                  <Button onClick={this.addProposal} variant="dark" className="button"> Ajouter </Button>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
+            <Row className="align-items-center">
+              <Col>
+                <Card>
+                  <Card.Header><strong>Résultats</strong></Card.Header>
+                  <Card.Body>
+                    <Button onClick={this.getWinnerInfo} variant="dark" className="button"> Obtenir les résultats </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          </Container>
 
-          <Row className="align-items-center">
-            <Col>
-              <Card>
-                <Card.Header><strong>Démarrer l'enregistrement des propositions</strong></Card.Header>
-                <Card.Body>
-                  <Button onClick={this.startProposalRegistration} variant="dark" className="button"> Démarrer </Button>
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col>
-              <Card>
-                <Card.Header><strong>Vote</strong></Card.Header>
-                <Card.Body>
-                  <Form.Group controlId="formId">
-                    <Form.Label>ID de la proposition : </Form.Label>
-                    <Form.Control type="text" id="idProposal" className="input" />
-                  </Form.Group>
-                  <Button onClick={this.vote} variant="dark" className="button"> Voter </Button>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-
-          <Row className="align-items-center">
-            <Col>
-              <Card>
-                <Card.Header><strong>Terminer l'enregistrement des propositions</strong></Card.Header>
-                <Card.Body>
-                  <Button onClick={this.endProposalRegistration} variant="dark" className="button"> Terminer </Button>
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col>
-              <Card>
-                <Card.Header><strong>Résultats</strong></Card.Header>
-                <Card.Body>
-                  <Button onClick={this.getWinnerInfo} variant="dark" className="button"> Obtenir les résultats </Button>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-
-          <Row className="align-items-center">
-            <Col>
-              <Card>
-                <Card.Header><strong>Démarrer la session de vote</strong></Card.Header>
-                <Card.Body>
-                  <Button onClick={this.startVotingSession} variant="dark" className="button"> Démarrer </Button>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col>
-            </Col>
-          </Row>
-
-          <Row className="align-items-center">
-            <Col>
-              <Card>
-                <Card.Header><strong>Terminer la session de vote</strong></Card.Header>
-                <Card.Body>
-                  <Button onClick={this.endVotingSession} variant="dark" className="button"> Terminer </Button>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col>
-            </Col>
-          </Row>
-
-          <Row className="align-items-center">
-            <Col>
-              <Card>
-                <Card.Header><strong>Calculer les résultats</strong></Card.Header>
-                <Card.Body>
-                  <Button onClick={this.votesCalculation} variant="dark" className="button"> Calculer </Button>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col>
-            </Col>
-          </Row>
-        </Container>
-
-        <br></br>
-      </div>
-    );
+          <br></br>
+        </div>
+      );
+    }
   }
 }
 

@@ -81,7 +81,7 @@ contract Voting is Ownable{
         require(whitelist[msg.sender].isRegistered == true, "You're not whitelisted");
         require(proposalId<=2^256-1,"Max Proposal");
         proposals[proposalId] = Proposal(description,0);
-        proposalId++; //Réentrence -- Question pour François
+        proposalId++;
         emit ProposalRegistered(proposalId-1);
     }
 
