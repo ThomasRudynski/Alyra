@@ -35,7 +35,7 @@ class App extends Component {
       // example of interacting with the contract's methods.
       this.setState({ web3, accounts, contract: instance }, this.runInit);
       const contractOwner = await this.affectOwner();
-      this.setState({owner : contractOwner})
+      this.setState({ owner: contractOwner })
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -158,7 +158,7 @@ class App extends Component {
     try {
       console.log("Call");
       console.log(await contract.methods.getWinnerInfo().call({ from: accounts[0] }));
-      const node = document.createTextNode("Gagnant : "+await contract.methods.getWinnerInfo().call({ from: accounts[0] }));
+      const node = document.createTextNode("Gagnant : " + await contract.methods.getWinnerInfo().call({ from: accounts[0] }));
       const p = document.createElement("p");
       p.className = "info";
       p.appendChild(node)
@@ -187,7 +187,7 @@ class App extends Component {
     }
 
     //OWNER VIEW
-    if (String(this.state.owner).toLowerCase() === String(this.state.accounts[0]).toLowerCase()){
+    if (String(this.state.owner).toLowerCase() === String(this.state.accounts[0]).toLowerCase()) {
       return (
         <div className="App">
           <div>
@@ -196,30 +196,60 @@ class App extends Component {
             <hr></hr>
           </div>
           <Container>
-            <Row className="align-items-center">
+            <Row>
               <Col>
                 <h3>Administrateur</h3>
-              </Col>
-
-              <Col>
-                <h3>Utilisateur</h3>
-              </Col>
-            </Row>
-            <Row className="align-items-center">
-              <Col>
-                <Card>
+                <Card className='m-2 mt-4'>
                   <Card.Header><strong>Ajouter un nouveau compte à la liste blanche</strong></Card.Header>
                   <Card.Body>
                     <Form.Group controlId="formAddress">
+                      <Form.Label>Adresse de l'utilisateur : </Form.Label>
                       <Form.Control type="text" id="address" ref={(input) => { this.address = input }} className="input" />
                     </Form.Group>
                     <Button onClick={this.whitelistVoter} variant="dark" className="button"> Autoriser </Button>
                   </Card.Body>
                 </Card>
+
+                <Card className='m-2'>
+                  <Card.Header><strong>Démarrer l'enregistrement des propositions</strong></Card.Header>
+                  <Card.Body>
+                    <Button onClick={this.startProposalRegistration} variant="dark" className="button"> Démarrer </Button>
+                  </Card.Body>
+                </Card>
+
+                <Card className='m-2'>
+                  <Card.Header><strong>Terminer l'enregistrement des propositions</strong></Card.Header>
+                  <Card.Body>
+                    <Button onClick={this.endProposalRegistration} variant="dark" className="button"> Terminer </Button>
+                  </Card.Body>
+                </Card>
+
+                <Card className='m-2'>
+                  <Card.Header><strong>Démarrer la session de vote</strong></Card.Header>
+                  <Card.Body>
+                    <Button onClick={this.startVotingSession} variant="dark" className="button"> Démarrer </Button>
+                  </Card.Body>
+                </Card>
+
+                <Card className='m-2'>
+                  <Card.Header><strong>Terminer la session de vote</strong></Card.Header>
+                  <Card.Body>
+                    <Button onClick={this.endVotingSession} variant="dark" className="button"> Terminer </Button>
+                  </Card.Body>
+                </Card>
+
+                <Card className='m-2'>
+                  <Card.Header><strong>Calculer les résultats</strong></Card.Header>
+                  <Card.Body>
+                    <Button onClick={this.votesCalculation} variant="dark" className="button"> Calculer </Button>
+                  </Card.Body>
+                </Card>
               </Col>
 
+
               <Col>
-                <Card>
+                <h3>Utilisateur</h3>
+                <Card className='m-2 mt-4'>
                   <Card.Header><strong>Ajouter une proposition</strong></Card.Header>
                   <Card.Body>
                     <Form.Group controlId="formDescription">
@@ -229,21 +259,8 @@ class App extends Component {
                     <Button onClick={this.addProposal} variant="dark" className="button"> Ajouter </Button>
                   </Card.Body>
                 </Card>
-              </Col>
-            </Row>
 
-            <Row className="align-items-center">
-              <Col>
-                <Card>
-                  <Card.Header><strong>Démarrer l'enregistrement des propositions</strong></Card.Header>
-                  <Card.Body>
-                    <Button onClick={this.startProposalRegistration} variant="dark" className="button"> Démarrer </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-
-              <Col>
-                <Card>
+                <Card className='m-2'>
                   <Card.Header><strong>Vote</strong></Card.Header>
                   <Card.Body>
                     <Form.Group controlId="formId">
@@ -253,65 +270,13 @@ class App extends Component {
                     <Button onClick={this.vote} variant="dark" className="button"> Voter </Button>
                   </Card.Body>
                 </Card>
-              </Col>
-            </Row>
 
-            <Row className="align-items-center">
-              <Col>
-                <Card>
-                  <Card.Header><strong>Terminer l'enregistrement des propositions</strong></Card.Header>
-                  <Card.Body>
-                    <Button onClick={this.endProposalRegistration} variant="dark" className="button"> Terminer </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-
-              <Col>
-                <Card>
+                <Card className='m-2'>
                   <Card.Header><strong>Résultats</strong></Card.Header>
                   <Card.Body id="winnerInfo">
                     <Button onClick={this.getWinnerInfo} variant="dark" className="button"> Obtenir les résultats </Button>
                   </Card.Body>
                 </Card>
-              </Col>
-            </Row>
-
-            <Row className="align-items-center">
-              <Col>
-                <Card>
-                  <Card.Header><strong>Démarrer la session de vote</strong></Card.Header>
-                  <Card.Body>
-                    <Button onClick={this.startVotingSession} variant="dark" className="button"> Démarrer </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-              <Col>
-              </Col>
-            </Row>
-
-            <Row className="align-items-center">
-              <Col>
-                <Card>
-                  <Card.Header><strong>Terminer la session de vote</strong></Card.Header>
-                  <Card.Body>
-                    <Button onClick={this.endVotingSession} variant="dark" className="button"> Terminer </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-              <Col>
-              </Col>
-            </Row>
-
-            <Row className="align-items-center">
-              <Col>
-                <Card>
-                  <Card.Header><strong>Calculer les résultats</strong></Card.Header>
-                  <Card.Body>
-                    <Button onClick={this.votesCalculation} variant="dark" className="button"> Calculer </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-              <Col>
               </Col>
             </Row>
           </Container>
@@ -322,7 +287,7 @@ class App extends Component {
     }
 
     //USER VIEW
-    if (String(this.state.owner).toLowerCase() !== String(this.state.accounts[0]).toLowerCase()){
+    if (String(this.state.owner).toLowerCase() !== String(this.state.accounts[0]).toLowerCase()) {
       return (
         <div className="App">
           <div>
@@ -330,47 +295,58 @@ class App extends Component {
             <p className="text-center" id="userAddress">Adresse de l'utilisateur : {this.state.accounts[0]}</p>
             <hr></hr>
           </div>
+
           <Container>
-            <Row className="align-items-center">
-              <Col>
-                <Card>
-                  <Card.Header><strong>Ajouter une proposition</strong></Card.Header>
-                  <Card.Body>
-                    <Form.Group controlId="formDescription">
-                      <Form.Label>Description de la proposition : </Form.Label>
-                      <Form.Control type="text" id="description" className="input" />
-                    </Form.Group>
-                    <Button onClick={this.addProposal} variant="dark" className="button"> Ajouter </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-            </Row>
+            <Col>
+              <Row>
+                <Col></Col>
+                <Col>
+                  <Card>
+                    <Card.Header><strong>Ajouter une proposition</strong></Card.Header>
+                    <Card.Body>
+                      <Form.Group controlId="formDescription">
+                        <Form.Label>Description de la proposition : </Form.Label>
+                        <Form.Control type="text" id="description" className="input" />
+                      </Form.Group>
+                      <Button onClick={this.addProposal} variant="dark" className="button"> Ajouter </Button>
+                    </Card.Body>
+                  </Card>
+                </Col>
+                <Col></Col>
+              </Row>
 
-            <Row className="align-items-center">
-              <Col>
-                <Card>
-                  <Card.Header><strong>Vote</strong></Card.Header>
-                  <Card.Body>
-                    <Form.Group controlId="formId">
-                      <Form.Label>ID de la proposition : </Form.Label>
-                      <Form.Control type="text" id="idProposal" className="input" />
-                    </Form.Group>
-                    <Button onClick={this.vote} variant="dark" className="button"> Voter </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-            </Row>
+              <Row>
+                <Col></Col>
+                <Col>
+                  <Card>
+                    <Card.Header><strong>Vote</strong></Card.Header>
+                    <Card.Body>
+                      <Form.Group controlId="formId">
+                        <Form.Label>ID de la proposition : </Form.Label>
+                        <Form.Control type="text" id="idProposal" className="input" />
+                      </Form.Group>
+                      <Button onClick={this.vote} variant="dark" className="button"> Voter </Button>
+                    </Card.Body>
+                  </Card>
+                </Col>
+                <Col></Col>
 
-            <Row className="align-items-center">
-              <Col>
-                <Card>
-                  <Card.Header><strong>Résultats</strong></Card.Header>
-                  <Card.Body>
-                    <Button onClick={this.getWinnerInfo} variant="dark" className="button"> Obtenir les résultats </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-            </Row>
+              </Row>
+
+              <Row>
+                <Col></Col>
+                <Col>
+                  <Card>
+                    <Card.Header><strong>Résultats</strong></Card.Header>
+                    <Card.Body>
+                      <Button onClick={this.getWinnerInfo} variant="dark" className="button"> Obtenir les résultats </Button>
+                    </Card.Body>
+                  </Card>
+                </Col>
+                <Col></Col>
+
+              </Row>
+            </Col>
           </Container>
 
           <br></br>
