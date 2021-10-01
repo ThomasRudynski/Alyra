@@ -73,7 +73,7 @@ contract Voting is Ownable{
         emit WorkflowStatusChange(WorkflowStatus.RegisteringVoters, WorkflowStatus.ProposalsRegistrationStarted);
     }
 
-    /** @dev Ajoute une proposition à la liste associée
+    /** @dev Ajoute une proposition à la liste
      *  @param description Description de la proposition à ajouter
      */
     function addProposal(string memory description) external {

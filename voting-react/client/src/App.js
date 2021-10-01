@@ -12,6 +12,7 @@ import "./App.css";
 
 class App extends Component {
 
+  //Variables globales de la classe
   state = { storageValue: 0, web3: null, accounts: null, contract: null, owner: null };
 
   componentDidMount = async () => {
@@ -44,6 +45,7 @@ class App extends Component {
     }
   };
 
+  //Fonction qui permet de recharger la page en cas de changement d'adresse 
   runInit = async () => {
     window.ethereum.on('accountsChanged', function (accounts) {
       window.location.href = "http://localhost:3000";
@@ -51,6 +53,7 @@ class App extends Component {
   }
 
 
+  //Ajoute un utilisateur sur la liste blanche
   whitelistVoter = async () => {
     const { accounts, contract } = this.state;
     const address = this.address.value;
@@ -64,6 +67,7 @@ class App extends Component {
     }
   }
 
+  //Débute la phase d'enregistrement des propositions
   startProposalRegistration = async () => {
     const { accounts, contract } = this.state;
     // Interaction avec le smart contract pour démarrer l'enregistrement des propositions
@@ -75,6 +79,7 @@ class App extends Component {
     }
   }
 
+  //Ajoute une proposition à la liste
   addProposal = async () => {
     const { accounts, contract } = this.state;
     // Interaction avec le smart contract pour démarrer l'enregistrement des propositions
@@ -86,6 +91,7 @@ class App extends Component {
     }
   }
 
+  //Termine la phase d'enregistrement des propositions
   endProposalRegistration = async () => {
     const { accounts, contract } = this.state;
     // Interaction avec le smart contract pour démarrer l'enregistrement des propositions
@@ -97,6 +103,7 @@ class App extends Component {
     }
   }
 
+  //Débute la phase de vote
   startVotingSession = async () => {
     const { accounts, contract } = this.state;
     // Interaction avec le smart contract pour démarrer l'enregistrement des propositions
@@ -108,6 +115,7 @@ class App extends Component {
     }
   }
 
+  //Enregistrement d'un vote
   vote = async () => {
     const { accounts, contract } = this.state;
     // Interaction avec le smart contract pour démarrer l'enregistrement des propositions
@@ -119,6 +127,7 @@ class App extends Component {
     }
   }
 
+  //Termine la phase de vote
   endVotingSession = async () => {
     const { accounts, contract } = this.state;
     // Interaction avec le smart contract pour démarrer l'enregistrement des propositions
@@ -130,6 +139,7 @@ class App extends Component {
     }
   }
 
+  // Calcule le résultat final (la proposition gagnante)
   votesCalculation = async () => {
     const { accounts, contract } = this.state;
     // Interaction avec le smart contract pour démarrer l'enregistrement des propositions
@@ -141,12 +151,18 @@ class App extends Component {
     }
   }
 
-
+  //Renvoie les informations de la proposition gagnante
   getWinnerInfo = async () => {
     const { accounts, contract } = this.state;
     // Interaction avec le smart contract pour démarrer l'enregistrement des propositions
     try {
-      await contract.methods.getWinnerInfo().call({ from: accounts[0] });
+      console.log("Call");
+      console.log(await contract.methods.getWinnerInfo().call({ from: accounts[0] }));
+      const node = document.createTextNode("Gagnant : "+await contract.methods.getWinnerInfo().call({ from: accounts[0] }));
+      const p = document.createElement("p");
+      p.className = "info";
+      p.appendChild(node)
+      document.getElementById("winnerInfo").appendChild(p);
     } catch (e) {
       var firstPart = e.message.substring(e.message.search("VM"))
       alert(firstPart.substring(0, firstPart.search('"')));
@@ -253,7 +269,7 @@ class App extends Component {
               <Col>
                 <Card>
                   <Card.Header><strong>Résultats</strong></Card.Header>
-                  <Card.Body>
+                  <Card.Body id="winnerInfo">
                     <Button onClick={this.getWinnerInfo} variant="dark" className="button"> Obtenir les résultats </Button>
                   </Card.Body>
                 </Card>
