@@ -156,14 +156,13 @@ class App extends Component {
     const { accounts, contract } = this.state;
     // Interaction avec le smart contract pour démarrer l'enregistrement des propositions
     try {
-      console.log("Call");
-      console.log(await contract.methods.getWinnerInfo().call({ from: accounts[0] }));
       const node = document.createTextNode("Gagnant : " + await contract.methods.getWinnerInfo().call({ from: accounts[0] }));
       const p = document.createElement("p");
       p.className = "info";
       p.appendChild(node)
       document.getElementById("winnerInfo").appendChild(p);
     } catch (e) {
+      alert(e);
       var firstPart = e.message.substring(e.message.search("VM"))
       alert(firstPart.substring(0, firstPart.search('"')));
     }
@@ -338,7 +337,7 @@ class App extends Component {
                 <Col>
                   <Card>
                     <Card.Header><strong>Résultats</strong></Card.Header>
-                    <Card.Body>
+                    <Card.Body id="winnerInfo">
                       <Button onClick={this.getWinnerInfo} variant="dark" className="button"> Obtenir les résultats </Button>
                     </Card.Body>
                   </Card>
