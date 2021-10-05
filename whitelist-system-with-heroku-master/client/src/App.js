@@ -21,11 +21,11 @@ class App extends Component {
       const accounts = await web3.eth.getAccounts();
 
       // Récupérer l’instance du smart contract “Whitelist” avec web3 et les informations du déploiement du fichier (client/src/contracts/Whitelist.json)
-      const networkId = await web3.eth.net.getId();
-      const deployedNetwork = Whitelist.networks[networkId];
+      const deployedNetwork = Whitelist.networks[3];
+  
       const instance = new web3.eth.Contract(
         Whitelist.abi,
-        deployedNetwork && deployedNetwork.address,
+        "0x968E3E2c2250eC61B78846f400E0EC07C67cB424",
       );
 
       // Set web3, accounts, and contract to the state, and then proceed with an
@@ -52,8 +52,6 @@ class App extends Component {
   whitelist = async() => {
     const { accounts, contract } = this.state;
     const address = this.address.value;
-    console.log(this.address);
-    console.log(this.address.value);
     
     // Interaction avec le smart contract pour ajouter un compte 
     await contract.methods.whitelist(address).send({from: accounts[0]});
