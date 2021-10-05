@@ -43,10 +43,10 @@ module.exports = {
     // options below to some value.
     //
     development: {
-    host: "127.0.0.1",     // Localhost (default: none)
-    port: 7545,            // Standard Ethereum port (default: none)
-    network_id: "5777",       // Any network (default: none)
-     },
+      host: "127.0.0.1",     // Localhost (default: none)
+      port: 7545,            // Standard Ethereum port (default: none)
+      network_id: "5777",       // Any network (default: none)
+    },
     // Another network with more advanced options...
     // advanced: {
     // port: 8777,             // Custom port
@@ -58,18 +58,18 @@ module.exports = {
     // },
     // Useful for deploying to a public network.
     // NB: It's important to wrap the provider as a function.
-      ropsten: {
-        provider: function(){
-          return new HDWalletProvider(`${process.env.MNEMONIC}`, `https://ropsten.infura.io/v3/${process.env.INFURA_ID}`);
-        } ,
-        network_id: 3
+    ropsten: {
+      provider: function () {
+        return new HDWalletProvider(`${process.env.MNEMONIC}`, `https://ropsten.infura.io/v3/${process.env.INFURA_ID}`);
       },
-      rinkeby: {
-        provider: function(){
-          return new HDWalletProvider(`${process.env.MNEMONIC}`, `https://rinkeby.infura.io/v3/${process.env.INFURA_ID}`);
-        } ,
-        network_id: 4
+      network_id: 3
+    },
+    rinkeby: {
+      provider: function () {
+        return new HDWalletProvider(`${process.env.MNEMONIC}`, `https://rinkeby.infura.io/v3/${process.env.INFURA_ID}`);
       },
+      network_id: 4
+    },
     // Useful for private networks
     // private: {
     // provider: () => new HDWalletProvider(mnemonic, `https://network.io`),
@@ -93,7 +93,7 @@ module.exports = {
           enabled: false,
           runs: 200
         },
-      evmVersion: "byzantium"
+        evmVersion: "byzantium"
       }
     }
   },
@@ -109,13 +109,13 @@ module.exports = {
   // $ truffle migrate --reset --compile-all
   //
   // db: {
-    // enabled: false,
-    // host: "127.0.0.1",
-    // adapter: {
-    //   name: "sqlite",
-    //   settings: {
-    //     directory: ".db"
-    //   }
-    // }
+  // enabled: false,
+  // host: "127.0.0.1",
+  // adapter: {
+  //   name: "sqlite",
+  //   settings: {
+  //     directory: ".db"
+  //   }
+  // }
   // }
 };
