@@ -54,13 +54,13 @@ contract("Voting", accounts => {
     voting.whitelistVoter('0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4');
     voting.whitelistVoter('0x261C90A862C384992bf82e4EAf76A97A0BB61001');
     await voting.startProposalRegistration();
-    voting.addProposal('Proposal 1').call({from: '0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4'});
-    voting.addProposal('Proposal 2').call({from: '0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4'});
+    voting.addProposal('Proposal 1',{from: '0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4'});
+    voting.addProposal('Proposal 2',{from: '0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4'});
     await voting.endProposalRegistration();
 
     await voting.startVotingSession();
-    voting.vote(1).call({from: '0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4'});
-    voting.vote(1).call({from: '0x261C90A862C384992bf82e4EAf76A97A0BB61001'});
+    voting.vote(1,{from: '0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4'});
+    voting.vote(1,{from: '0x261C90A862C384992bf82e4EAf76A97A0BB61001'});
     await voting.endVotingSession();
     await voting.votesCalculation();
 

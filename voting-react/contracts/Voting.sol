@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.7;
-import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+import "../client/node_modules/@openzeppelin/contracts/access/Ownable.sol";
 
 //Smart Contract Voting
 contract Voting is Ownable{
