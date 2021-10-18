@@ -8,7 +8,11 @@ contract("Voting", accounts => {
   })
 
   it("...has an owner", async () => {
-    assert.equal(await voting.owner(),'0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4' , "Voting React has not owner");
+    assert.equal(await voting.owner()!="0x0000000000000000000000000000000000000000",true , "Voting React has not owner");
+  });
+
+  it("...has the good owner", async () => {
+    assert.equal(await voting.owner(),'0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4' , "Voting React has not the good owner");
   });
 
   it("...starting status is 0", async () => {
@@ -50,17 +54,50 @@ contract("Voting", accounts => {
     assert.equal(await voting.status(),'5' , "Status is not 5");
   });
 
-  it("...winner should be proposal 2", async () => {
-    voting.whitelistVoter('0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4');
-    voting.whitelistVoter('0x261C90A862C384992bf82e4EAf76A97A0BB61001');
+  it("...winner should be proposal 1", async () => {
+    await voting.whitelistVoter('0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4');
+    await voting.whitelistVoter('0x261C90A862C384992bf82e4EAf76A97A0BB61001');
     await voting.startProposalRegistration();
-    voting.addProposal('Proposal 1',{from: '0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4'});
-    voting.addProposal('Proposal 2',{from: '0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4'});
+    await voting.addProposal('Proposal 1',{from: '0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4'});
     await voting.endProposalRegistration();
 
     await voting.startVotingSession();
-    voting.vote(1,{from: '0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4'});
-    voting.vote(1,{from: '0x261C90A862C384992bf82e4EAf76A97A0BB61001'});
+    await voting.vote(0,{from: '0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4'});
+    await voting.vote(0,{from: '0x261C90A862C384992bf82e4EAf76A97A0BB61001'});
+    await voting.endVotingSession();
+    await voting.votesCalculation();
+
+    assert.equal(await voting.getWinnerInfo(),'Proposal 1' , "Winner is not Proposal 1");
+  });
+
+  it("...winner should be proposal 2", async () => {
+    await voting.whitelistVoter('0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4');
+    await voting.whitelistVoter('0x261C90A862C384992bf82e4EAf76A97A0BB61001');
+    await voting.startProposalRegistration();
+    await voting.addProposal('Proposal 1',{from: '0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4'});
+    await voting.addProposal('Proposal 2',{from: '0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4'});
+    await voting.endProposalRegistration();
+
+    await voting.startVotingSession();
+    await voting.vote(1,{from: '0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4'});
+    await voting.vote(1,{from: '0x261C90A862C384992bf82e4EAf76A97A0BB61001'});
+    await voting.endVotingSession();
+    await voting.votesCalculation();
+
+    assert.equal(await voting.getWinnerInfo(),'Proposal 2' , "Winner is not Proposal 2");
+  });
+
+  it("...with equality winner should be proposal with last vote", async () => {
+    await voting.whitelistVoter('0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4');
+    await voting.whitelistVoter('0x261C90A862C384992bf82e4EAf76A97A0BB61001');
+    await voting.startProposalRegistration();
+    await voting.addProposal('Proposal 1',{from: '0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4'});
+    await voting.addProposal('Proposal 2',{from: '0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4'});
+    await voting.endProposalRegistration();
+
+    await voting.startVotingSession();
+    await voting.vote(0,{from: '0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4'});
+    await voting.vote(1,{from: '0x261C90A862C384992bf82e4EAf76A97A0BB61001'});
     await voting.endVotingSession();
     await voting.votesCalculation();
 
