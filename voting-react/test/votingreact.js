@@ -81,7 +81,7 @@ contract("Voting", accounts => {
     await voting.whitelistVoter('0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4');
 
     await truffleAssert.reverts(
-      voting.addProposal('Proposal 1',{from: '0x261C90A862C384992bf82e4EAf76A97A0BB61001'}),
+      voting.addProposal('Proposal 1',{from: '0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4'}),
       "Returned error: VM Exception while processing transaction: revert Proposal registration is not started -- Reason given: Proposal registration is not started."
     );
   });
@@ -101,7 +101,7 @@ contract("Voting", accounts => {
     );
   });
 
-  //Test 12 : La proposition ne doit pas être ajoutée si la session de vote n'est pas commencé
+  //Test 12 : Le vote ne doit pas être ajoutée si la session de vote n'est pas commencé
   it("...vote should not be taken into account (vote is not started)", async () => {
     await voting.whitelistVoter('0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4');
     await voting.startProposalRegistration();
@@ -109,7 +109,7 @@ contract("Voting", accounts => {
     await voting.endProposalRegistration();
 
     await truffleAssert.reverts(
-      voting.vote(0,{from: '0x261C90A862C384992bf82e4EAf76A97A0BB61001'}),
+      voting.vote(0,{from: '0xF24eC99E0dBcBb1AEA6BEc735E52869A1858f9f4'}),
       "Returned error: VM Exception while processing transaction: revert Voting session is not started -- Reason given: Voting session is not started."
     );
   });
