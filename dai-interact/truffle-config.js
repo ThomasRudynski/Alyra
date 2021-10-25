@@ -18,7 +18,9 @@
  *
  */
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+require('dotenv').config({ path: '.env' })
+
 //
 // const fs = require('fs');
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
@@ -45,6 +47,14 @@ module.exports = {
       host: "127.0.0.1",     // Localhost (default: none)
       port: 7545,            // Standard Ethereum port (default: none)
       network_id: 5777,       // Any network (default: none)
+    },
+    kovan: {
+      provider: function () {
+        return new HDWalletProvider(`${process.env.MNEMONIC}`, `https://kovan.infura.io/v3/${process.env.INFURA_ID}`);
+      },
+      gas: 5000000,
+      gasPrice: 25000000000,
+      network_id: 42
     }
     // Another network with more advanced options...
     // advanced: {
